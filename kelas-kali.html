@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelas Kali — Latihan Perkalian</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EFF3F8;
+    --surface:#FFFFFF;
+    --ink:#16324F;
+    --ink-soft:#5B7392;
+    --line:#DDE6F0;
+    --l1:#FFB100;
+    --l2:#FF6F59;
+    --l3:#06A77D;
+    --l4:#7C4DFF;
+    --l5:#2B6CB0;
+    --good:#06A77D;
+    --good-bg:#E4F7F0;
+    --bad:#E63946;
+    --bad-bg:#FDEAEC;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Nunito',sans-serif;
+    min-height:100vh;
+    padding:28px 18px 60px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+
+  /* ---------- Top bar ---------- */
+  .topbar{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
+  .brand{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.7rem;color:var(--ink);}
+  .brand span{color:var(--l2);}
+  .navbtn{
+    background:none;border:2px solid var(--line);color:var(--ink-soft);
+    font-family:'Nunito',sans-serif;font-weight:700;font-size:.9rem;
+    padding:8px 14px;border-radius:10px;cursor:pointer;transition:.15s;
+  }
+  .navbtn:hover{border-color:var(--l5);color:var(--l5);}
+
+  /* ---------- Cards / surfaces ---------- */
+  .card{
+    background:var(--surface);
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 1px 2px rgba(22,50,79,.06), 0 8px 24px rgba(22,50,79,.05);
+  }
+  .card + .card{margin-top:16px;}
+
+  h1.title{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.35rem;margin:0 0 4px;}
+  p.lead{color:var(--ink-soft);margin:0 0 18px;font-size:.98rem;}
+
+  label.field-label{display:block;font-weight:700;font-size:.85rem;color:var(--ink-soft);margin-bottom:6px;}
+  input.name-input{
+    width:100%;padding:12px 14px;border-radius:12px;border:2px solid var(--line);
+    font-family:'Nunito',sans-serif;font-size:1rem;color:var(--ink);outline:none;
+    transition:.15s;
+  }
+  input.name-input:focus{border-color:var(--l5);}
+
+  /* ---------- Level grid ---------- */
+  .levels{display:grid;grid-template-columns:1fr;gap:12px;margin-top:18px;}
+  .level-card{
+    display:flex;align-items:center;gap:16px;
+    background:var(--surface);border-radius:16px;padding:16px 18px;
+    border:2px solid var(--line);cursor:pointer;text-align:left;
+    transition:.15s; width:100%;
+  }
+  .level-card:hover{border-color:var(--accent);transform:translateY(-1px);}
+  .level-num{
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.1rem;
+    width:38px;height:38px;flex:none;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--accent);color:#fff;
+  }
+  .level-body{flex:1;min-width:0;}
+  .level-name{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.02rem;}
+  .level-sub{color:var(--ink-soft);font-size:.85rem;margin-top:2px;}
+  .level-example{
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.15rem;
+    color:var(--accent); flex:none; min-width:92px; text-align:right;
+  }
+
+  /* ---------- Quiz screen ---------- */
+  .quiz-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+  .dots{display:flex;gap:6px;flex-wrap:wrap;}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--line);}
+  .dot.done-correct{background:var(--good);}
+  .dot.done-wrong{background:var(--bad);}
+  .dot.current{background:var(--ink);transform:scale(1.3);}
+  .score-pill{
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.9rem;
+    background:var(--bg);border:2px solid var(--line);border-radius:999px;
+    padding:5px 14px;color:var(--ink-soft);
+  }
+
+  .question-box{text-align:center;padding:28px 10px 8px;}
+  .question-expr{
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:2.5rem;
+    letter-spacing:.5px; color:var(--ink);
+  }
+  .question-expr .op{color:var(--accent);margin:0 10px;}
+
+  .answer-display{
+    margin:22px auto 6px;width:min(280px,100%);
+    background:var(--bg);border:2px solid var(--line);border-radius:14px;
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.6rem;
+    text-align:center;padding:12px 10px;min-height:56px;color:var(--ink);
+    letter-spacing:1px;
+  }
+  .answer-display.empty{color:var(--ink-soft);font-weight:600;font-size:1.1rem;}
+
+  .feedback-banner{
+    max-width:280px;margin:0 auto 10px;padding:10px 14px;border-radius:12px;
+    font-family:'Baloo 2',sans-serif;font-weight:700;text-align:center;font-size:1.05rem;
+    display:none;
+  }
+  .feedback-banner.show-good{display:block;background:var(--good-bg);color:var(--good);}
+  .feedback-banner.show-bad{display:block;background:var(--bad-bg);color:var(--bad);}
+
+  .keypad{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+    max-width:280px;margin:14px auto 0;
+  }
+  .key{
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.3rem;
+    padding:16px 0;border-radius:12px;border:2px solid var(--line);
+    background:var(--surface);color:var(--ink);cursor:pointer;transition:.1s;
+  }
+  .key:active{transform:scale(.95);}
+  .key.wide{grid-column:span 1;}
+  .key.clear{color:var(--ink-soft);font-size:1rem;}
+  .key.submit{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .key.submit:disabled{opacity:.4;}
+  .key:disabled{opacity:.5;cursor:default;}
+
+  .quit-row{text-align:center;margin-top:18px;}
+  .link-btn{background:none;border:none;color:var(--ink-soft);font-family:'Nunito',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;text-decoration:underline;}
+
+  /* ---------- Result screen ---------- */
+  .score-hero{text-align:center;padding:8px 0 4px;}
+  .score-big{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:3rem;color:var(--ink);}
+  .score-of{color:var(--ink-soft);font-weight:700;font-size:1rem;}
+  .score-tag{
+    display:inline-block;margin-top:10px;padding:5px 16px;border-radius:999px;
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.9rem;
+  }
+
+  table.review{width:100%;border-collapse:collapse;margin-top:16px;font-size:.92rem;}
+  table.review th{text-align:left;color:var(--ink-soft);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;padding:6px 8px;border-bottom:2px solid var(--line);}
+  table.review td{padding:9px 8px;border-bottom:1px solid var(--line);font-family:'Nunito',sans-serif;}
+  table.review tr:last-child td{border-bottom:none;}
+  td.status-ok{color:var(--good);font-weight:800;}
+  td.status-bad{color:var(--bad);font-weight:800;}
+  td.wrong-answer{color:var(--bad);text-decoration:line-through;}
+  td.correct-fix{color:var(--good);font-weight:700;}
+
+  .btn-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
+  .btn{
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:.95rem;
+    padding:12px 18px;border-radius:12px;border:2px solid var(--line);
+    background:var(--surface);color:var(--ink);cursor:pointer;flex:1;min-width:140px;transition:.15s;
+  }
+  .btn.primary{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .btn:hover{transform:translateY(-1px);}
+
+  /* ---------- History screen ---------- */
+  .hist-item{
+    border:2px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;cursor:pointer;
+  }
+  .hist-top{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .hist-name{font-family:'Baloo 2',sans-serif;font-weight:700;}
+  .hist-meta{color:var(--ink-soft);font-size:.82rem;margin-top:2px;}
+  .hist-score{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.15rem;}
+  .hist-detail{margin-top:12px;display:none;}
+  .hist-detail.open{display:block;}
+  .empty-state{text-align:center;color:var(--ink-soft);padding:30px 10px;}
+  .loading{text-align:center;color:var(--ink-soft);padding:16px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">Kelas <span>Kali</span></div>
+    <button class="navbtn" id="navBtn">Riwayat hasil</button>
+  </div>
+  <div id="app"></div>
+</div>
+
+<script>
+(function(){
+  const LEVELS = [
+    {id:1, name:'Perkalian dasar', sub:'1×1 sampai 10×10', example:'6 × 7', color:'var(--l1)',
+      gen:()=>({a:rand(1,10), b:rand(1,10)})},
+    {id:2, name:'Puluhan × satuan', sub:'10–99 dikali 1–9', example:'24 × 3', color:'var(--l2)',
+      gen:()=>({a:rand(10,99), b:rand(1,9)})},
+    {id:3, name:'Ratusan × satuan', sub:'100–999 dikali 1–9', example:'312 × 4', color:'var(--l3)',
+      gen:()=>({a:rand(100,999), b:rand(1,9)})},
+    {id:4, name:'Puluhan × puluhan', sub:'10–99 dikali 10–99', example:'23 × 45', color:'var(--l4)',
+      gen:()=>({a:rand(10,99), b:rand(10,99)})},
+    {id:5, name:'Ratusan × puluhan', sub:'100–999 dikali 10–99', example:'412 × 36', color:'var(--l5)',
+      gen:()=>({a:rand(100,999), b:rand(10,99)})},
+  ];
+  const TOTAL_Q = 10;
+
+  function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+
+  let state = {screen:'home', name:'', level:null, questions:[], idx:0, answers:[], current:'', feedback:null, openHistId:null};
+
+  const app = document.getElementById('app');
+  const navBtn = document.getElementById('navBtn');
+  navBtn.addEventListener('click', ()=>{
+    if(state.screen==='history'){ state.screen='home'; navBtn.textContent='Riwayat hasil'; }
+    else { state.screen='history'; navBtn.textContent='Kembali'; }
+    render();
+  });
+
+  function makeQuestions(level){
+    const qs = []; const seen = new Set();
+    while(qs.length < TOTAL_Q){
+      const {a,b} = level.gen();
+      const key = a+'x'+b;
+      if(seen.has(key)) continue;
+      seen.add(key);
+      qs.push({a,b, answer:a*b});
+    }
+    return qs;
+  }
+
+  function startQuiz(level){
+    state.level = level;
+    state.questions = makeQuestions(level);
+    state.idx = 0;
+    state.answers = [];
+    state.current = '';
+    state.feedback = null;
+    state.screen = 'quiz';
+    render();
+  }
+
+  function pressKey(k){
+    if(state.feedback) return;
+    if(k==='clear'){ state.current=''; render(); return; }
+    if(k==='back'){ state.current = state.current.slice(0,-1); render(); return; }
+    if(k==='submit'){ submitAnswer(); return; }
+    if(state.current.length>=6) return;
+    state.current += k;
+    render();
+  }
+
+  function submitAnswer(){
+    if(state.current==='') return;
+    const q = state.questions[state.idx];
+    const given = parseInt(state.current,10);
+    const correct = given === q.answer;
+    state.answers.push({a:q.a, b:q.b, correctAnswer:q.answer, given, correct});
+    state.feedback = correct ? 'good' : 'bad';
+    render();
+    setTimeout(()=>{
+      state.feedback = null;
+      state.current = '';
+      if(state.idx+1 < state.questions.length){
+        state.idx += 1;
+        render();
+      } else {
+        finishQuiz();
+      }
+    }, 1100);
+  }
+
+  async function finishQuiz(){
+    const score = state.answers.filter(a=>a.correct).length;
+    state.lastResult = {
+      id: Date.now()+'-'+Math.random().toString(36).slice(2,7),
+      name: state.name || 'Tanpa nama',
+      levelId: state.level.id,
+      levelName: state.level.name,
+      score, total: state.questions.length,
+      date: new Date().toISOString(),
+      details: state.answers.map(a=>({a:a.a,b:a.b,correctAnswer:a.correctAnswer,given:a.given,correct:a.correct}))
+    };
+    state.screen = 'result';
+    render();
+    try{
+      let hist = [];
+      try{
+        const res = await window.storage.get('quiz-history', false);
+        if(res && res.value) hist = JSON.parse(res.value);
+      }catch(e){ hist = []; }
+      hist.unshift(state.lastResult);
+      if(hist.length>50) hist = hist.slice(0,50);
+      await window.storage.set('quiz-history', JSON.stringify(hist), false);
+    }catch(e){ console.error('Gagal menyimpan riwayat', e); }
+  }
+
+  function keyHandler(e){
+    if(state.screen!=='quiz' || state.feedback) return;
+    if(e.key>='0' && e.key<='9') pressKey(e.key);
+    else if(e.key==='Backspace') pressKey('back');
+    else if(e.key==='Enter') pressKey('submit');
+  }
+  document.addEventListener('keydown', keyHandler);
+
+  function render(){
+    if(state.screen==='home') return renderHome();
+    if(state.screen==='quiz') return renderQuiz();
+    if(state.screen==='result') return renderResult();
+    if(state.screen==='history') return renderHistory();
+  }
+
+  function renderHome(){
+    app.innerHTML = `
+      <div class="card">
+        <h1 class="title">Ayo latihan perkalian!</h1>
+        <p class="lead">Isi nama, lalu pilih level soal. Setiap level berisi ${TOTAL_Q} soal.</p>
+        <label class="field-label" for="nameInput">Nama siswa (opsional)</label>
+        <input class="name-input" id="nameInput" type="text" placeholder="Contoh: Aisyah" value="${escapeHtml(state.name)}">
+        <div class="levels" id="levelList"></div>
+      </div>
+    `;
+    document.getElementById('nameInput').addEventListener('input', e=>{ state.name = e.target.value; });
+    const list = document.getElementById('levelList');
+    LEVELS.forEach(lv=>{
+      const btn = document.createElement('button');
+      btn.className = 'level-card';
+      btn.style.setProperty('--accent', lv.color);
+      btn.innerHTML = `
+        <div class="level-num">${lv.id}</div>
+        <div class="level-body">
+          <div class="level-name">${lv.name}</div>
+          <div class="level-sub">${lv.sub}</div>
+        </div>
+        <div class="level-example">${lv.example}</div>
+      `;
+      btn.addEventListener('click', ()=>startQuiz(lv));
+      list.appendChild(btn);
+    });
+  }
+
+  function renderQuiz(){
+    const q = state.questions[state.idx];
+    const scoreSoFar = state.answers.filter(a=>a.correct).length;
+    let dots = '';
+    for(let i=0;i<state.questions.length;i++){
+      let cls='dot';
+      if(i<state.answers.length) cls += state.answers[i].correct ? ' done-correct':' done-wrong';
+      else if(i===state.idx) cls += ' current';
+      dots += `<div class="${cls}"></div>`;
+    }
+    const fbClass = state.feedback==='good' ? 'show-good' : state.feedback==='bad' ? 'show-bad':'';
+    const fbText = state.feedback==='good' ? 'Benar! Mantap 🎉' : state.feedback==='bad' ? `Belum tepat. Jawabannya ${q.answer}` : '';
+
+    app.innerHTML = `
+      <div class="card">
+        <div class="quiz-head">
+          <div class="dots">${dots}</div>
+          <div class="score-pill">Skor: ${scoreSoFar}/${state.questions.length}</div>
+        </div>
+        <div class="question-box">
+          <div class="question-expr">${q.a}<span class="op">×</span>${q.b}</div>
+          <div class="feedback-banner ${fbClass}">${fbText}</div>
+          <div class="answer-display ${state.current==='' ? 'empty':''}">${state.current===''? 'Ketik jawaban' : state.current}</div>
+        </div>
+        <div class="keypad" id="keypad"></div>
+        <div class="quit-row"><button class="link-btn" id="quitBtn">Hentikan latihan</button></div>
+      </div>
+    `;
+    const keypad = document.getElementById('keypad');
+    const keys = ['1','2','3','4','5','6','7','8','9','back','0','submit'];
+    keys.forEach(k=>{
+      const b = document.createElement('button');
+      b.className = 'key' + (k==='submit' ? ' submit' : k==='back' ? ' clear':'');
+      b.textContent = k==='back' ? '⌫' : k==='submit' ? 'Jawab' : k;
+      b.disabled = !!state.feedback || (k==='submit' && state.current==='');
+      b.addEventListener('click', ()=>pressKey(k));
+      keypad.appendChild(b);
+    });
+    document.getElementById('quitBtn').addEventListener('click', ()=>{
+      state.screen='home'; render();
+    });
+  }
+
+  function renderResult(){
+    const r = state.lastResult;
+    const pct = Math.round((r.score/r.total)*100);
+    const tagColor = pct>=80 ? 'var(--good)' : pct>=50 ? 'var(--l1)' : 'var(--bad)';
+    const tagBg = pct>=80 ? 'var(--good-bg)' : pct>=50 ? '#FFF6E0' : 'var(--bad-bg)';
+    const tagText = pct>=80 ? 'Hebat sekali' : pct>=50 ? 'Sudah lumayan' : 'Perlu latihan lagi';
+
+    let rows = '';
+    r.details.forEach((d,i)=>{
+      rows += `<tr>
+        <td>${i+1}</td>
+        <td>${d.a} × ${d.b}</td>
+        <td class="${d.correct?'':'wrong-answer'}">${d.given}</td>
+        ${d.correct ? '<td>—</td>' : `<td class="correct-fix">${d.correctAnswer}</td>`}
+        <td class="${d.correct?'status-ok':'status-bad'}">${d.correct?'Benar':'Salah'}</td>
+      </tr>`;
+    });
+
+    app.innerHTML = `
+      <div class="card">
+        <div class="score-hero">
+          <div class="level-sub" style="margin-bottom:4px;">${r.name} · ${r.levelName}</div>
+          <div class="score-big">${r.score}<span class="score-of">/${r.total}</span></div>
+          <div class="score-tag" style="color:${tagColor};background:${tagBg};">${tagText} · ${pct}%</div>
+        </div>
+        <table class="review">
+          <thead><tr><th>No</th><th>Soal</th><th>Jawaban</th><th>Kunci</th><th>Status</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div class="btn-row">
+          <button class="btn primary" id="againBtn">Ulangi level ini</button>
+          <button class="btn" id="homeBtn">Pilih level lain</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('againBtn').addEventListener('click', ()=>startQuiz(state.level));
+    document.getElementById('homeBtn').addEventListener('click', ()=>{ state.screen='home'; render(); });
+  }
+
+  async function renderHistory(){
+    app.innerHTML = `<div class="card"><h1 class="title">Riwayat hasil</h1><p class="lead">Semua percobaan yang pernah dikerjakan di perangkat ini.</p><div id="histList" class="loading">Memuat riwayat…</div></div>`;
+    let hist = [];
+    try{
+      const res = await window.storage.get('quiz-history', false);
+      if(res && res.value) hist = JSON.parse(res.value);
+    }catch(e){ hist = []; }
+
+    const listEl = document.getElementById('histList');
+    if(!listEl) return; // user navigated away while loading
+    if(hist.length===0){
+      listEl.innerHTML = `<div class="empty-state">Belum ada riwayat. Selesaikan satu latihan dulu, ya.</div>`;
+      return;
+    }
+    listEl.className = '';
+    listEl.innerHTML = '';
+    hist.forEach(r=>{
+      const pct = Math.round((r.score/r.total)*100);
+      const color = pct>=80 ? 'var(--good)' : pct>=50 ? '#B8860B' : 'var(--bad)';
+      const item = document.createElement('div');
+      item.className = 'hist-item';
+      const d = new Date(r.date);
+      const dateStr = d.toLocaleDateString('id-ID', {day:'numeric',month:'short',year:'numeric'}) + ' · ' + d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+      let rows = '';
+      r.details.forEach((det,i)=>{
+        rows += `<tr>
+          <td>${i+1}</td><td>${det.a} × ${det.b}</td>
+          <td class="${det.correct?'':'wrong-answer'}">${det.given}</td>
+          ${det.correct?'<td>—</td>':`<td class="correct-fix">${det.correctAnswer}</td>`}
+          <td class="${det.correct?'status-ok':'status-bad'}">${det.correct?'Benar':'Salah'}</td>
+        </tr>`;
+      });
+      item.innerHTML = `
+        <div class="hist-top">
+          <div>
+            <div class="hist-name">${escapeHtml(r.name)} · ${r.levelName}</div>
+            <div class="hist-meta">${dateStr}</div>
+          </div>
+          <div class="hist-score" style="color:${color};">${r.score}/${r.total}</div>
+        </div>
+        <div class="hist-detail" id="detail-${r.id}">
+          <table class="review">
+            <thead><tr><th>No</th><th>Soal</th><th>Jawaban</th><th>Kunci</th><th>Status</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      `;
+      item.addEventListener('click', ()=>{
+        const d = item.querySelector('.hist-detail');
+        d.classList.toggle('open');
+      });
+      listEl.appendChild(item);
+    });
+  }
+
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
